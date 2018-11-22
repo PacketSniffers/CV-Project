@@ -12,13 +12,12 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
-import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -31,10 +30,10 @@ public class AccountController {
     private AccountRepository repository;
 
     @Autowired
-    private GridFsOperations operations;
-
-    @Autowired
     private MongoTemplate mongoTemplate;
+    
+    @Autowired
+    private PasswordEncoder bCode;
 
     @GetMapping(value = "/")
     public List<Account> getAllAccounts(){
@@ -45,6 +44,8 @@ public class AccountController {
     public Account createAccount(@Valid @RequestBody Account account){
         System.out.println("Account creation attempting");
         account.set_id(ObjectId.get());
+        System.out.println(bCode.encode(account.getPassword()));
+        account.setPassword(bCode.encode(account.getPassword()));
         repository.save(account);
         return account;
     }
@@ -101,7 +102,17 @@ public class AccountController {
 
     @PutMapping(value = "/{id}")
     public String modifyAccountById(@PathVariable("id")ObjectId id, @Valid @RequestBody Account account){
+    	Account updatable = repository.findBy_id(id);
         account.set_id(id);
+        updatable.updateFields(account);
+        repository.save(updatable);
+        return "Account Updated";
+    }
+    
+    @PutMapping(value = "/password/{id}")
+    public String modifyPasswordById(@PathVariable("id")ObjectId id, @Valid @RequestBody Account account){
+        account.set_id(id);
+        account.setPassword(bCode.encode(account.getPassword()));
         repository.save(account);
         return "Account Updated";
     }

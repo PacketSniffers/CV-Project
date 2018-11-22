@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 @Document
 public class Account {
@@ -16,6 +17,7 @@ public class Account {
     private String lastName;
     @Email
     private String email;
+    @NotNull
     private String password;
     private Binary file;
 
@@ -74,5 +76,16 @@ public class Account {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
+    
+    public void updateFields(Account inAccount) {
+    	if (!inAccount.email.equals(null)) {
+    		this.email = inAccount.email;
+    	}
+    	if (!inAccount.firstName.equals(null)) {
+    		this.firstName = inAccount.firstName;
+    	}
+    	if (!inAccount.lastName.equals(null)) {
+    		this.lastName = inAccount.lastName;
+    	}
+    }
 }
