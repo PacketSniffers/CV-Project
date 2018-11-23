@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="localhost" port="8085" doc:name="HTTP Listener Configuration" basePath="account"/>
+    <http:request-config name="HTTP_Request_Configuration" host="localhost" port="8080" doc:name="HTTP Request Configuration" basePath="account"/>
+    <http:request-builder name="Request_Builder" doc:name="Request Builder">
+        <http:uri-param paramName="id" value="#[message.outboundProperties.URLParamID]"/>
+    </http:request-builder>
+    <http:listener-config name="HTTP_Listener_Configuration1" host="0.0.0.0" port="8080" doc:name="HTTP Listener Configuration" basePath="account"/>
+    <smtp:gmail-connector name="Gmail" contentType="text/html" validateConnections="true" doc:name="Gmail"/>
+    <flow name="AccountPutFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="{id}" allowedMethods="PUT" doc:name="HTTP"/>
+        <set-property propertyName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Property"/>
+        <logger message="#[message.outboundProperties.URLParamID]" level="INFO" doc:name="Logger"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="{id}" method="PUT" doc:name="HTTP">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
+        <logger message="#[flowVars.firstName]" level="INFO" doc:name="Logger"/>
+        <logger message="#[flowVars.email]" level="INFO" doc:name="Logger"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\UpdateAccountEmail.html" doc:name="Account Update Template"/>
+        <flow-ref name="cv_emailSub_Flow" doc:name="Flow Reference"/>
+    </flow>
+    <flow name="AccountPutFlow2">
+        <http:listener config-ref="HTTP_Listener_Configuration1" path="{id}" allowedMethods="PUT" doc:name="HTTP"/>
+        <logger message="#[message.inboundProperties.'http.uri.params'.id]" level="INFO" doc:name="Logger"/>
+    </flow>
+    <sub-flow name="cv_emailSub_Flow">
+        <smtp:outbound-endpoint host="smtp.gmail.com" user="packetsniffers404@gmail.com" password="Packet123" connector-ref="Gmail" to="#[flowVars.email]" from="packetsniffers404@gmail.com" subject="CV Status" responseTimeout="10000" doc:name="SMTP"/>
+    </sub-flow>
+    <flow name="PasswordPutFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="password/{id}" allowedMethods="PUT" doc:name="HTTP"/>
+        <set-property propertyName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Property"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="{id}" method="PUT" doc:name="HTTP">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\UpdatePasswordEmail.html" doc:name="Password Update Template"/>
+        <flow-ref name="cv_emailSub_Flow" doc:name="Flow Reference"/>
+    </flow>
+    <flow name="AccountDeleteFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="{id}" allowedMethods="DELETE" doc:name="HTTP"/>
+        <set-property propertyName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Property"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="{id}" method="GET" doc:name="HTTP"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="Copy_of_JSON to Object"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="Copy_of_First Name"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Copy_of_Email"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\UpdatePasswordEmail.html" doc:name="Copy_of_Password Update Template"/>
+        <flow-ref name="cv_emailSub_Flow" doc:name="Copy_of_Flow Reference"/>
+    </flow>
+</mule>
