@@ -5,7 +5,7 @@ import Linkify from 'react-linkify';
 import axios from 'axios';
 import createHistory from 'history/createBrowserHistory';
 
-class Login extends Component {
+class LoginAlt extends Component {
 
   constructor(props){
     super(props);
@@ -15,8 +15,7 @@ class Login extends Component {
 
     this.state = {
       email: '',
-      password: '',
-      account: ''
+      password: ''
     };
   }
 
@@ -28,24 +27,32 @@ class Login extends Component {
     this.setState({password: event.target.value})
   }
 
-  async onFormSubmit(){
+  onFormSubmit(event){
+    event.preventDefault();
     let base64 = require('base-64');
-    let res = await fetch('/account/mail/'+this.state.email,{
+    var stats = 0;
+    fetch('/account/mail/'+this.state.email,{
+      method: 'POST',
       headers:{
         'Authorization': 'Basic ' + base64.encode(this.state.email + ":" + this.state.password),
         'Accept':'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      //body: JSON.stringify(this.state),results => {return JSON.parse(results)}
-    }).catch(alert('nothing here but us chickens'));
-      console.log(res.response.status);
-      if(res.response.status === 200){
-        let body = await res.json();
-        this.setState({account: body});
-        alert(this.state.body);
-        this.props.history.push('/adminpage')
+      
+    }).then(response => {stats = response.status; return response.json()}).then(response => {
+      
+      if(stats == 200){
+        if(response.userRole === 'admin'){
+          this.props.history.push('/adminpage')
+        }
+        else{
+          this.props.history.push('/placeholder')
+        }   
       }
-      else{alert('you done fucked up')}
+        else{
+          alert("Incorrect login")
+        }
+    });
     
   }
 
@@ -57,7 +64,7 @@ class Login extends Component {
             <img width="100px" src={'https://avatars0.githubusercontent.com/u/36368080?s=400&v=4'} style={{marginBottom: '30px', borderRadius: '200px'}} className="img-responsive"/>
 
             <FormGroup>
-              <h1 class="display-5">Sign In</h1>
+              <h1 className="display-5">Sign In</h1>
             </FormGroup>
           
             <FormGroup>
@@ -69,7 +76,7 @@ class Login extends Component {
             </FormGroup>
 
             <FormGroup>
-              <Button type = "submit" color="primary" size="me" block>Login</Button>
+              <Button color="primary" size="me" block>Login</Button>
             </FormGroup>
 
             <FormGroup>
@@ -82,4 +89,4 @@ class Login extends Component {
     );
   }
 }
-export default withRouter(Login)
+export default withRouter(LoginAlt)
