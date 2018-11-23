@@ -19,6 +19,9 @@ public class Account {
     private String email;
     @NotNull
     private String password;
+
+    //private Role userRole;
+    private String userRole;
     private Binary file;
 
 
@@ -27,6 +30,7 @@ public class Account {
     public Account(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
+        //this.userRole = RoleManager.getRoleList().giveRole("user");
     }
 
     public String getEmail() {
@@ -88,4 +92,19 @@ public class Account {
     		this.lastName = inAccount.lastName;
     	}
     }
+
+    public String getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
+    }
+
+//        public String getUserRole() {
+//        return userRole.getName();
+//    }
+//    public void setUserRole(String userRole) {
+//        this.userRole = RoleManager.getRoleList().giveRole(userRole);
+//    }
 }

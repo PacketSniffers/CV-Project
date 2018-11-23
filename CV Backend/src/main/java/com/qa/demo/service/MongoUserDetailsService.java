@@ -21,11 +21,11 @@ public class MongoUserDetailsService implements UserDetailsService
 	  private AccountRepository repository;
 	  @Override
 	  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-	    Account user = repository.findByemail(email);
+	    Account user = repository.findByEmail(email);
 	    if(user == null) {
 	      throw new UsernameNotFoundException("User not found");
 	    }
 	    List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("user"));
-	    return new User(user.getEmail(), user.getPassword(), authorities);
+	    return new User(user.getEmail(), user.getPassword( ), authorities);
 	  }
 }

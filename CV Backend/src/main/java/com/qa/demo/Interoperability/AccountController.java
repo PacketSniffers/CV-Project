@@ -2,6 +2,7 @@ package com.qa.demo.Interoperability;
 
 import com.qa.demo.domain.Account;
 import com.qa.demo.repository.AccountRepository;
+import com.qa.demo.service.MongoUserDetailsService;
 import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
@@ -9,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,6 +25,7 @@ import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
+@Transactional
 @RestController
 @RequestMapping("/account")
 public class AccountController {
@@ -35,6 +39,9 @@ public class AccountController {
     @Autowired
     private PasswordEncoder bCode;
 
+    @Autowired
+    private MongoUserDetailsService mongoUserDetailsService;
+
     @GetMapping(value = "/")
     public List<Account> getAllAccounts(){
         return repository.findAll();
@@ -44,7 +51,8 @@ public class AccountController {
     public Account createAccount(@Valid @RequestBody Account account){
         System.out.println("Account creation attempting");
         account.set_id(ObjectId.get());
-        System.out.println(bCode.encode(account.getPassword()));
+        //account.setUserRole("user");
+        //System.out.println(bCode.encode(account.getPassword()));
         account.setPassword(bCode.encode(account.getPassword()));
         repository.save(account);
         return account;
@@ -54,7 +62,6 @@ public class AccountController {
     public String addFileToUser(@RequestParam("file") MultipartFile multipartFile, @PathVariable("id") ObjectId id){
         Account account = repository.findBy_id(id);
         try {
-            //account.setFile(new Binary(BsonBinarySubType.BINARY, multipartFile.getBytes()));
             mongoTemplate.upsert(Query.query(where("_id").is(id)), Update.update("file",new Binary(BsonBinarySubType.BINARY, multipartFile.getBytes())), Account.class);
 
         } catch (IOException e) {
@@ -98,6 +105,15 @@ public class AccountController {
     @GetMapping(value = "/{id}")
     public Account getAccountById(@PathVariable("id") ObjectId id){
         return repository.findBy_id(id);
+    }
+
+    @PostMapping(value = "/mail/{email}")
+    public Account getAccountByEmail(@PathVariable("email") String email, HttpServletResponse response){
+        Account retrieved = repository.findByEmail(email);
+        if (retrieved == null){
+            response.setStatus(404);}
+        System.out.println(retrieved.getUserRole());
+        return retrieved;
     }
 
     @PutMapping(value = "/{id}")
