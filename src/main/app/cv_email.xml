@@ -23,21 +23,21 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
     <http:request-config name="HTTP_Request_Configuration1" host="localhost" port="8085" basePath="/account" doc:name="HTTP Request Configuration"/>
     <flow name="CreateAccountPostFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/" allowedMethods="POST" doc:name="HTTP"/>
-        <http:request config-ref="HTTP_Request_Configuration" path="/" method="POST" doc:name="HTTP"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/" method="POST" doc:name="HTTP Create Account Request"/>
         <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
         <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
         <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
         <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
-        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\CreateAccount.html" doc:name="Create Template"/>
-        <flow-ref name="UserEmailSubFlow" doc:name="Flow Reference"/>
-        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\AccountCreationReport.html" doc:name="Parse Template"/>
-        <flow-ref name="AdminEmailSubFlow" doc:name="Flow Reference"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\CreateAccount.html" doc:name="Account Creation Email"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\AdminCreationReport.html" doc:name="Admin Creation Report"/>
+        <flow-ref name="AdminEmailSubFlow" doc:name="Admin Email SubFlow"/>
     </flow>
     <flow name="DeleteAccountFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/{id}" allowedMethods="DELETE" doc:name="HTTP"/>
-        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Variable"/>
-        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Variable"/>
-        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP">
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP GetAccountFlow">
             <http:request-builder>
                 <http:builder ref="Request_Builder"/>
             </http:request-builder>
@@ -52,23 +52,23 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
                 <http:builder ref="Request_Builder"/>
             </http:request-builder>
         </http:request>
-        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\DeleteEmail.html" doc:name="Account Delete Template"/>
-        <flow-ref name="UserEmailSubFlow" doc:name="Flow Reference"/>
-        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\AccountDeleteReport.html" doc:name="Account Delete Report"/>
-        <flow-ref name="AdminEmailSubFlow" doc:name="Flow Reference"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\DeleteEmail.html" doc:name="Account Delete Email"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\AdminDeleteReport.html" doc:name="Admin Delete Report"/>
+        <flow-ref name="AdminEmailSubFlow" doc:name="Admin Email SubFlow"/>
     </flow>
     <flow name="UpdateAccountFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/{id}" allowedMethods="PUT" doc:name="HTTP"/>
-        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Variable"/>
-        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Variable"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
         <logger message="#[flowVars.URLParamID]" level="INFO" doc:name="Logger"/>
         <logger message="#[flowVars.AuthorizationKey]" level="INFO" doc:name="Logger"/>
-        <http:request config-ref="HTTP_Request_Configuration" path="/{id}" method="PUT" doc:name="HTTP">
+        <http:request config-ref="HTTP_Request_Configuration" path="/{id}" method="PUT" doc:name="HTTP Update Account Request">
             <http:request-builder>
                 <http:builder ref="Request_Builder"/>
             </http:request-builder>
         </http:request>
-        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP">
+        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP GetAccountFlow">
             <http:request-builder>
                 <http:builder ref="Request_Builder"/>
             </http:request-builder>
@@ -79,20 +79,20 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
         <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
         <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
         <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\UpdateAccountEmail.html" doc:name="Account Update Email"/>
-        <flow-ref name="UserEmailSubFlow" doc:name="Flow Reference"/>
-        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\AccountUpdateReport.html" doc:name="Account Update Report"/>
-        <flow-ref name="AdminEmailSubFlow" doc:name="Flow Reference"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\AdminUpdateReport.html" doc:name="Admin Update Report"/>
+        <flow-ref name="AdminEmailSubFlow" doc:name="Admin Email SubFlow"/>
     </flow>
     <flow name="UpdatePasswordFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/password/{id}" allowedMethods="PUT" doc:name="HTTP"/>
-        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Variable"/>
-        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Variable"/>
-        <http:request config-ref="HTTP_Request_Configuration" path="/password/{id}" method="PUT" doc:name="HTTP">
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/password/{id}" method="PUT" doc:name="HTTP Update Password Request">
             <http:request-builder>
                 <http:builder ref="Request_Builder"/>
             </http:request-builder>
         </http:request>
-        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP">
+        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP Get Account Requst">
             <http:request-builder>
                 <http:builder ref="Request_Builder"/>
             </http:request-builder>
@@ -103,10 +103,37 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
         <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
         <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
         <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\UpdatePasswordEmail.html" doc:name="Account Password Email"/>
-        <flow-ref name="UserEmailSubFlow" doc:name="Flow Reference"/>
-        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\PasswordUpdateReport.html" doc:name="Account PasswordReport"/>
-        <flow-ref name="AdminEmailSubFlow" doc:name="Flow Reference"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\AdminUpdatePasswordReport.html" doc:name="Admin Update Password Report"/>
+        <flow-ref name="AdminEmailSubFlow" doc:name="Admin Email SubFlow"/>
     </flow>
+    <flow name="UploadFileFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/upload/{id}" allowedMethods="POST" doc:name="HTTP"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <logger message="#[message.inboundAttachments['payload']]" level="INFO" doc:name="Logger"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/upload/{id}" method="POST" doc:name="HTTP">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
+    <sub-flow name="cv_emailSub_Flow">
+        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="userID" value="#[payload.email]" doc:name="User ID"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
+        <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\UploadFileEmail.html" doc:name="Account File Upload Email"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="Flow Reference"/>
+        <parse-template location="C:\Users\Admin\AnypointStudio\workspace\cv_email\src\main\resources\AdminAddFileReport.html" doc:name="Admin File Upload Report"/>
+        <flow-ref name="AdminEmailSubFlow" doc:name="Flow Reference"/>
+    </sub-flow>
     <flow name="GetAccountFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/{id}" allowedMethods="GET" doc:name="HTTP"/>
         <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Variable"/>
