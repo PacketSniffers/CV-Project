@@ -68,10 +68,10 @@ export default class Profile extends Component {
                     <Row>
                         <Col xs="6">
                             <Row>
-                                <Col xs="3" xs="6">
-                                    <img width="250px" src={'https://bit.ly/2Fvw9xi'} style={{paddingTop: '50px', paddingLeft: '50px'}} className="img-responsive"/>
+                                <Col xs="6" xs="6">
+                                    <img width="250px" src={'http://www.fastrackerzkennel.com/wp-content/uploads/2014/03/male-placeholder-image.jpeg'} style={{paddingTop: '50px', paddingLeft: '50px'}} className="img-responsive"/>
                                 </Col>
-                                <Col xs="3" xs="6">
+                                <Col xs="6" xs="6">
                                     <h6 style={{paddingTop: '50px', color: '#888a8c'}}>Name</h6>
                                     <div style={{width: '200px', height: '1px', backgroundColor: 'grey'}}></div>
                                     <h5 style={{paddingTop: '10px', color: '#636466'}}>Aharan Manoharan</h5>

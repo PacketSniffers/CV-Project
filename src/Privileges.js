@@ -8,7 +8,7 @@ export default class Privileges extends Component {
       <Container>
         <center>
           <form method='post' action='#' class='loginForm'>
-            <img width="100px" src={'https://avatars0.githubusercontent.com/u/36368080?s=400&v=4'} style={{marginBottom: '30px', borderRadius: '200px'}} className="img-responsive"/>
+            <img width="100px" src={'http://www.fastrackerzkennel.com/wp-content/uploads/2014/03/male-placeholder-image.jpeg'} style={{marginBottom: '30px', borderRadius: '200px'}} className="img-responsive"/>
 
             <FormGroup>
               <h1 class="display-5">Set Privileges</h1>
