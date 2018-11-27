@@ -19,10 +19,6 @@ export default class Privileges extends Component {
             </FormGroup>
 
             <FormGroup>
-              <Input type="text" name="name" id="name" placeholder="Name" />
-            </FormGroup>
-
-            <FormGroup>
                 <Input type="select" name="users" id="setPrivileges">
                     <option>Trainee</option>
                     <option>Admin</option>

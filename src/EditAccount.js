@@ -19,7 +19,11 @@ export default class EditAccount extends Component {
             </FormGroup>
 
             <FormGroup>
-              <Input type="text" name="name" id="name" placeholder="Name" />
+              <Input type="text" name="forename" id="exampleEmail" placeholder="Forename" />
+            </FormGroup>
+
+            <FormGroup>
+              <Input type="text" name="surname" id="exampleEmail" placeholder="Surname" />
             </FormGroup>
 
             <FormGroup>
