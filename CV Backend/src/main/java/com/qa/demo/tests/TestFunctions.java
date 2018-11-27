@@ -7,7 +7,7 @@ import org.openqa.selenium.WebElement;
 public class TestFunctions 
 {
 	
-	public boolean checkLoginPageElementExists(String elementName, WebDriver driver)
+	public boolean checkPageElementExists(String elementName, WebDriver driver)
 	{
 		try
 		{

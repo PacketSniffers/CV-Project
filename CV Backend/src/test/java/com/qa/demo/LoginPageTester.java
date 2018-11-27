@@ -31,7 +31,7 @@ public class LoginPageTester extends BaseTest
 		test.log(LogStatus.INFO, "Connecting to host");
 		driver.get(websiteURL);
 		
-		if(testFunctions.checkLoginPageElementExists(searchTerm, driver))
+		if(testFunctions.checkPageElementExists(searchTerm, driver))
 		{
 			test.log(LogStatus.PASS, "Element " + searchTerm + " found");
 		}
@@ -40,10 +40,8 @@ public class LoginPageTester extends BaseTest
 			test.log(LogStatus.FAIL,  "Element " + searchTerm + " not found");
 		}
 		
-		assertEquals(true, testFunctions.checkLoginPageElementExists(searchTerm, driver));
+		assertEquals(true, testFunctions.checkPageElementExists(searchTerm, driver));
 		
-		report.flush();
-		report.endTest(test);
 	}
 	
 	@Test
@@ -74,12 +72,8 @@ public class LoginPageTester extends BaseTest
 			test.log(LogStatus.FAIL, "Account creation page failed to load or incorrect");
 		}
 		
-		assertEquals(websiteURL + "/createuser", driver.getCurrentUrl());
-		
-		report.flush();
-		report.endTest(test);
-		
-		
+		assertEquals(websiteURL + "/createuser", driver.getCurrentUrl());		
 	}
 
+	
 }
