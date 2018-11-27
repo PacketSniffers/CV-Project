@@ -2,16 +2,12 @@ package com.qa.demo;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.LogStatus;
 import com.qa.demo.tests.TestFunctions;
 
@@ -31,7 +27,7 @@ public class LoginPageTester extends BaseTest
 		test.log(LogStatus.INFO, "Connecting to host");
 		driver.get(websiteURL);
 		
-		if(testFunctions.checkPageElementExists(searchTerm, driver))
+		if(testFunctions.CheckPageElementExists(searchTerm, driver))
 		{
 			test.log(LogStatus.PASS, "Element " + searchTerm + " found");
 		}
@@ -40,7 +36,7 @@ public class LoginPageTester extends BaseTest
 			test.log(LogStatus.FAIL,  "Element " + searchTerm + " not found");
 		}
 		
-		assertEquals(true, testFunctions.checkPageElementExists(searchTerm, driver));
+		assertEquals(true, testFunctions.CheckPageElementExists(searchTerm, driver));
 		
 	}
 	
@@ -54,7 +50,7 @@ public class LoginPageTester extends BaseTest
 		
 		test.log(LogStatus.INFO, "Accessing account creation");
 		
-		if(testFunctions.followTextLink("Create account", driver))
+		if(testFunctions.FollowTextLink("Create account", driver))
 		{
 			test.log(LogStatus.PASS, "Link successfully followed");
 		}
