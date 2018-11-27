@@ -2,6 +2,7 @@ package com.qa.demo.domain;
 
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -23,11 +24,12 @@ public class Account {
 
     //private Role userRole;
     @Field
-    private String userRole = "user";
+    private String userRole;
     private Binary file;
 
 
-    public Account(){};
+
+    public Account(){this.userRole="user";};
 
     public Account(String firstName, String lastName) {
         this.firstName = firstName;
