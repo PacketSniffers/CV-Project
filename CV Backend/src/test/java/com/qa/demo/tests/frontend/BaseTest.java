@@ -1,4 +1,4 @@
-package com.qa.demo;
+package com.qa.demo.tests.frontend;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,9 +8,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
 
-import com.qa.demo.tests.EnumConstantVariable;
-import com.qa.demo.tests.TestFunctions;
-import com.qa.demo.tests.EnumConstantVariable.LoginTag;
+import com.qa.demo.tests.utility.EnumConstantVariable;
+import com.qa.demo.tests.utility.TestFunctions;
+import com.qa.demo.tests.utility.EnumConstantVariable.LoginTag;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 

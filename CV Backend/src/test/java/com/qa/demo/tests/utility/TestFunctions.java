@@ -1,4 +1,4 @@
-package com.qa.demo.tests;
+package com.qa.demo.tests.utility;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

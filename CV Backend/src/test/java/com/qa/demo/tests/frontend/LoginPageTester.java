@@ -1,4 +1,4 @@
-package com.qa.demo;
+package com.qa.demo.tests.frontend;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,8 +9,8 @@ import org.openqa.selenium.support.PageFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.qa.demo.tests.utility.TestFunctions;
 import com.relevantcodes.extentreports.LogStatus;
-import com.qa.demo.tests.TestFunctions;
 
 
 @RunWith(SpringRunner.class)

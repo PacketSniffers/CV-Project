@@ -1,4 +1,4 @@
-package com.qa.demo;
+package com.qa.demo.tests.frontend;
 
 import static org.junit.Assert.assertEquals;
 
