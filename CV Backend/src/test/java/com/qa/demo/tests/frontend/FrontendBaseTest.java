@@ -36,7 +36,7 @@ public class FrontendBaseTest
         driver = new ChromeDriver();
         if(runs < 1)
         {
-            report = new ExtentReports("src/main/resources/selenium-reports/AssessmentReport.html", true);
+            report = new ExtentReports("src/main/resources/selenium-reports/FrontEndReport.html", true);
         }
         runs++;
         
