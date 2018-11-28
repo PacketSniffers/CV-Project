@@ -130,7 +130,7 @@ public class AccountController {
     }
 
 
-    @GetMapping(value = "/retrieve/{id}")
+   /* @GetMapping(value = "/retrieve/{id}")
     public String retrieveFileFromUser(@PathVariable("id") ObjectId id){
         Account account = repository.findBy_id(id);
         if(!NullChecker.NullChecker(account)) {
@@ -163,7 +163,7 @@ public class AccountController {
             return Constants.accountNotFound;
         }
         return Constants.fileNotExist;
-    }
+    }*/
 
     @GetMapping(value = "/{id}")
     public Account getAccountById(@PathVariable("id") ObjectId id, HttpServletResponse response){
