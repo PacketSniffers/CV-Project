@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="localhost" port="8085" doc:name="HTTP Listener Configuration" basePath="/account"/>
+    <http:request-config name="HTTP_Request_Configuration" host="localhost" port="8080" doc:name="HTTP Request Configuration" basePath="/account" enableCookies="true"/>
+    <http:request-builder name="Request_Builder" doc:name="Request Builder">
+        <http:uri-param paramName="id" value="#[flowVars.URLParamID]"/>
+        <http:header headerName="Authorization" value="#[flowVars.AuthorizationKey]"/>
+    </http:request-builder>
+    <http:listener-config name="HTTP_Listener_Configuration1" host="localhost" port="8086" doc:name="HTTP Listener Configuration" basePath="/account"/>
+    <smtp:gmail-connector name="Gmail" contentType="text/html" validateConnections="true" doc:name="Gmail"/>
+    <http:request-builder name="Request_Builder1" doc:name="Request Builder">
+        <http:uri-param paramName="role" value="admin"/>
+        <http:header headerName="Authorization" value="#[flowVars.AuthorizationKey]"/>
+    </http:request-builder>
+    <http:request-config name="HTTP_Request_Configuration1" host="localhost" port="8085" basePath="/account" doc:name="HTTP Request Configuration"/>
+    <http:request-builder name="Request_Builder2" doc:name="Request Builder">
+        <http:uri-param paramName="role" value="#[flowVars.URLParamRole]"/>
+        <http:header headerName="Authorization" value="#[flowVars.AuthorizationKey]"/>
+    </http:request-builder>
+    <http:request-builder name="Request_Builder3" doc:name="Request Builder">
+        <http:header headerName="Authorization" value="#[flowVars.A]"/>
+    </http:request-builder>
+    <http:request-builder name="Request_Builder4" doc:name="Request Builder">
+        <http:uri-param paramName="email" value="#[flowVars.A]"/>
+        <http:header headerName="Authorization" value="#[flowVars.AuthorizationKey]"/>
+    </http:request-builder>
+    <flow name="CreateAccountPostFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/" allowedMethods="POST" doc:name="HTTP"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/" method="POST" doc:name="HTTP Create Account Request"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
+        <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
+        <parse-template location="CreateAccount.html" doc:name="Account Creation Email"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+    </flow>
+    <flow name="DeleteAccountFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/{id}" allowedMethods="DELETE" doc:name="HTTP"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP Get Account Flow Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="userID" value="#[payload.email]" doc:name="User ID"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
+        <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/{id}" method="DELETE" doc:name="HTTP Delete Account Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <parse-template location="DeleteEmail.html" doc:name="Account Delete Email"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/role/{role}" method="GET" doc:name="HTTP Search User By Role Flow Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder1"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.List" doc:name="JSON to Object"/>
+        <foreach doc:name="For Each">
+            <set-variable variableName="AdminEmails" value="#[payload.email]" doc:name="Admin Emails"/>
+            <parse-template location="AdminDeleteReport.html" doc:name="Admin Delete Report"/>
+            <flow-ref name="AdminEmailSubFlow" doc:name="Admin Email SubFlow"/>
+        </foreach>
+    </flow>
+    <flow name="UpdateAccountFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/{id}" allowedMethods="PUT" doc:name="HTTP"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/{id}" method="PUT" doc:name="HTTP Update Account Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP Get Account Flow Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="userID" value="#[payload.email]" doc:name="User ID"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
+        <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
+        <parse-template location="UpdateAccountEmail.html" doc:name="Account Update Email"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/role/{role}" method="GET" doc:name="HTTP Search User By Role Flow Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder1"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.List" doc:name="JSON to Object"/>
+        <foreach doc:name="For Each">
+            <set-variable variableName="AdminEmails" value="#[payload.email]" doc:name="Admin Emails"/>
+            <parse-template location="AdminUpdateReport.html" doc:name="Admin Update Report"/>
+            <flow-ref name="AdminEmailSubFlow" doc:name="Admin Email SubFlow"/>
+        </foreach>
+    </flow>
+    <flow name="UpdatePasswordFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/password/{id}" allowedMethods="PUT" doc:name="HTTP"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/password/{id}" method="PUT" doc:name="HTTP Update Password Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP Get Account Flow Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="userID" value="#[payload.email]" doc:name="User ID"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
+        <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
+        <parse-template location="UpdatePasswordEmail.html" doc:name="Account Password Email"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/role/{role}" method="GET" doc:name="HTTP Search User By Role Flow Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder1"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.List" doc:name="JSON to Object"/>
+        <foreach doc:name="For Each">
+            <set-variable variableName="AdminEmails" value="#[payload.email]" doc:name="Admin Emails"/>
+            <parse-template location="AdminUpdatePasswordReport.html" doc:name="Admin Update Password Report"/>
+            <flow-ref name="AdminEmailSubFlow" doc:name="Admin Email SubFlow"/>
+        </foreach>
+    </flow>
+    <flow name="UploadFileFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/upload/{id}" allowedMethods="POST" doc:name="HTTP"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <copy-attachments attachmentName="file" doc:name="Attachment"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/upload/{id}" method="POST" doc:name="HTTP Upload File Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/{id}" method="GET" doc:name="HTTP Get Account Flow Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <set-variable variableName="userID" value="#[payload.email]" doc:name="User ID"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
+        <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
+        <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
+        <parse-template location="UploadFileEmail.html" doc:name="Account File Upload Email"/>
+        <flow-ref name="UserEmailSubFlow" doc:name="User Email SubFlow"/>
+        <http:request config-ref="HTTP_Request_Configuration1" path="/role/{role}" method="GET" doc:name="HTTP Search User By Role Flow Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder1"/>
+            </http:request-builder>
+        </http:request>
+        <json:json-to-object-transformer returnClass="java.util.List" doc:name="JSON to Object"/>
+        <foreach doc:name="Copy_of_Copy_of_For Each">
+            <set-variable variableName="AdminEmails" value="#[payload.email]" doc:name="Admin Emails"/>
+            <parse-template location="AdminAddFileReport.html" doc:name="Admin File Upload Report"/>
+            <flow-ref name="AdminEmailSubFlow" doc:name="Admin Email SubFlow"/>
+        </foreach>
+    </flow>
+    <flow name="GetAccountFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/{id}" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/{id}" method="GET" doc:name="HTTP Get Account Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
+    <flow name="GetAllFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/getall" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="A" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/getall" method="GET" doc:name="HTTP Get All Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder3"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
+    <flow name="GetByEmail">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/mail/{email}" allowedMethods="POST" doc:name="HTTP"/>
+        <set-variable variableName="A" value="#[message.inboundProperties.'http.uri.params'.email]" doc:name="Parameter ID"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/mail/{email}" method="POST" doc:name="HTTP Get Email Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder4"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
+    <flow name="SearchUserByRoleFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/role/{role}" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="URLParamRole" value="#[message.inboundProperties.'http.uri.params'.role]" doc:name="Parameter Role"/>
+        <set-variable variableName="AuthorizationKey" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/role/{role}" method="GET" doc:name="HTTP Search User By Role Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder2"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
+    <sub-flow name="UserEmailSubFlow">
+        <smtp:outbound-endpoint host="smtp.gmail.com" user="packetsniffers404@gmail.com" password="Packet123" connector-ref="Gmail" to="#[flowVars.email]" from="packetsniffers404@gmail.com" subject="CV Status" responseTimeout="10000" doc:name="SMTP"/>
+    </sub-flow>
+    <sub-flow name="AdminEmailSubFlow">
+        <smtp:outbound-endpoint host="smtp.gmail.com" user="packetsniffers404@gmail.com" password="Packet123" connector-ref="Gmail" to="#[flowVars.AdminEmails]" from="packetsniffers404@gmail.com" subject="Accounts Report" responseTimeout="10000" doc:name="SMTP"/>
+    </sub-flow>
+    <flow name="GetDownload">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/download/{id}" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Parameter ID"/>
+        <set-variable variableName="Authorization" value="#[message.inboundProperties.Authorization]" doc:name="Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/download/{id}" method="GET" doc:name="Download Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+        <!--<set-property propertyName="content-disposition" value = "attachment; filename=file.pdf" doc:name="Property"/>-->
+        <copy-properties propertyName="*" doc:name="Copy All HTTP Headers"/>
+    </flow>
+</mule>
