@@ -1,7 +1,5 @@
 package com.qa.demo.domain;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
 public class PasswordObject {
     private String oldPassword;
 

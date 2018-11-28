@@ -1,5 +1,6 @@
 package com.qa.demo.domain;
 
+import com.qa.demo.NullChecker;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,20 +23,18 @@ public class Account {
     @NotNull
     private String password;
 
-    //private Role userRole;
     @Field
-    private String userRole;
+    //private String userRole;
     private Binary file;
 
+    private Role.Roles userRole;
 
 
-
-    public Account(){this.userRole="user";}
+    public Account(){this.userRole= Role.Roles.user;}
 
     public Account(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        //this.userRole = RoleManager.getRoleList().giveRole("user");
     }
 
     public String getEmail() {
@@ -87,29 +86,22 @@ public class Account {
     }
     
     public void updateFields(Account inAccount) {
-    	if (inAccount.getEmail() != null || !inAccount.getEmail().equalsIgnoreCase("")) {
+    	if (NullChecker.NullChecker(inAccount.getEmail()) || !inAccount.getEmail().equalsIgnoreCase("")) {
     		this.email = inAccount.getEmail();
     	}
-    	if (inAccount.getFirstName() != null || !inAccount.getFirstName().equalsIgnoreCase("")) {
+    	if (NullChecker.NullChecker(inAccount.getFirstName()) || !inAccount.getFirstName().equalsIgnoreCase("")) {
     		this.firstName = inAccount.getFirstName();
     	}
-    	if (inAccount.getLastName() != null || !inAccount.getLastName().equalsIgnoreCase("")) {
+    	if (NullChecker.NullChecker(inAccount.getLastName())|| !inAccount.getLastName().equalsIgnoreCase("")) {
     		this.lastName = inAccount.getLastName();
     	}
     }
 
-    public String getUserRole() {
-        return this.userRole;
+    public Role.Roles getUserRole() {
+        return userRole;
     }
 
-    public void setUserRole(String userRole) {
+    public void setUserRole(Role.Roles userRole) {
         this.userRole = userRole;
     }
-
-//        public String getUserRole() {
-//        return userRole.getName();
-//    }
-//    public void setUserRole(String userRole) {
-//        this.userRole = RoleManager.getRoleList().giveRole(userRole);
-//    }
 }
