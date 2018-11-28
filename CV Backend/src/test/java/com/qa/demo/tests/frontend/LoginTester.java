@@ -12,7 +12,7 @@ import com.relevantcodes.extentreports.LogStatus;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class LoginTester extends BaseTest
+public class LoginTester extends FrontendBaseTest
 {
 
     @Test

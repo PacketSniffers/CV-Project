@@ -17,7 +17,7 @@ import com.relevantcodes.extentreports.LogStatus;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AccountCreationTester extends BaseTest
+public class AccountCreationTester extends FrontendBaseTest
 {
     private String accountCreationURL = "/createuser";
     private List<String> elementNames = Arrays.asList("firstName", "lastName", "email", "password");

@@ -15,7 +15,7 @@ import com.relevantcodes.extentreports.LogStatus;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class LoginPageTester extends BaseTest
+public class LoginPageTester extends FrontendBaseTest
 {
     @Test
     public void accessHomePage()
