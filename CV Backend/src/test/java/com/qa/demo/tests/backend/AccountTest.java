@@ -60,13 +60,6 @@ public class AccountTest {
     }
     
     @Test
-    public void userRolesTest() {
-    	String role = "admin";
-    	accountObj.setUserRole(role);
-    	assertEquals(role, accountObj.getUserRole());
-    }
-    
-    @Test
     public void fileTest() {
     	String fileName = "t";
     	byte[] testByte = fileName.getBytes();

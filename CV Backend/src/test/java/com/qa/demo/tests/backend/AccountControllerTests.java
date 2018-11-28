@@ -133,6 +133,6 @@ public class AccountControllerTests extends BackendBaseTest
 			e.printStackTrace();
 		}
 		
-		assertEquals(accountController.addFileToUser(result, testObjId), "File addition successful to account:" + testAccount.getFirstName()+ " " + testAccount.getLastName());
+		assertEquals(accountController.addFileToUser(result, testObjId), "File addition successful to account: " + testAccount.getFirstName()+ " " + testAccount.getLastName());
 	}
 }

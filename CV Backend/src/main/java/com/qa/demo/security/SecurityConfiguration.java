@@ -22,15 +22,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 
 	protected void configure(HttpSecurity http) throws Exception
 	{
-		http.csrf().disable().authorizeRequests().antMatchers("/account/").permitAll().antMatchers("/account/**")
-				.authenticated().and().logout().logoutUrl("/account/logout").deleteCookies("JSESSIONID", "auth_code").invalidateHttpSession(true).and().httpBasic().and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).invalidSessionUrl("/account/logout");
+		http.csrf().disable()
+                .authorizeRequests().antMatchers("/account/").permitAll()
+                .antMatchers("/account/**").authenticated()
+                .and().logout().logoutUrl("/account/logout").deleteCookies("JSESSIONID", "auth_code").invalidateHttpSession(true)
+                .and().httpBasic()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .invalidSessionUrl("/account/logout");
 	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder()
 	{
-		
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
