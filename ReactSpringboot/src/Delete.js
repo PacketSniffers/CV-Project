@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import {Navbar, NavbarBrand, NavItem, NavLink, Nav,Container, Input, Table, Button, ButtonGroup} from 'reactstrap';
+import { Button} from 'reactstrap';
 import {withRouter } from 'react-router-dom';
-import Linkify from 'react-linkify';
 
 class Delete extends Component {
     constructor(props){
@@ -19,7 +18,7 @@ handleDelete(event){
             stats = response.ok;
         
         }).then(response => {
-            if(stats == true){
+            if(stats === true){
                 window.alert("Account deleted");
                 window.location.reload();
 

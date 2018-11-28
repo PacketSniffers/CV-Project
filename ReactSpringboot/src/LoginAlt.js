@@ -28,11 +28,11 @@ class LoginAlt extends Component {
     this.setState({password: event.target.value})
   }
 
-  onFormSubmit(event){
+  async onFormSubmit(event){
     event.preventDefault();
     let base64 = require('base-64');
     var stats = 0;
-    fetch('/account/mail/'+this.state.email,{
+    await fetch('/account/mail/'+this.state.email,{
       method: 'POST',
       credentials: "include",
       headers:{
@@ -68,7 +68,7 @@ class LoginAlt extends Component {
       <Container>
         <center>
           <form onSubmit = {this.onFormSubmit} class='loginForm'>
-            <img width="100px" src={'https://avatars0.githubusercontent.com/u/36368080?s=400&v=4'} style={{marginBottom: '30px', borderRadius: '200px'}} className="img-responsive"/>
+            <img width="100px" src={'http://www.fastrackerzkennel.com/wp-content/uploads/2014/03/male-placeholder-image.jpeg'} style={{marginBottom: '30px', borderRadius: '200px'}} className="img-responsive"/>
 
             <FormGroup>
               <h1 className="display-5">Sign In</h1>

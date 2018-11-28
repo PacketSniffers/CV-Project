@@ -1,6 +1,9 @@
 package com.qa.demo.Interoperability;
 
+
+
 import com.qa.demo.domain.Account;
+import com.qa.demo.domain.PasswordObject;
 import com.qa.demo.repository.AccountRepository;
 import com.qa.demo.service.MongoUserDetailsService;
 import org.bson.BsonBinarySubType;
@@ -15,26 +18,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
 
@@ -81,7 +78,7 @@ public class AccountController {
 //    }
 
     @PostMapping(value = "/upload/{id}")
-    public String addFileToUser( @RequestParam("file") MultipartFile multipartFile, @PathVariable("id") ObjectId id){
+    public String addFileToUser(@RequestParam("file") MultipartFile multipartFile, @PathVariable("id") ObjectId id){
         System.out.println("File uploading being attempted");
         Account account = repository.findBy_id(id);
         try {
@@ -164,32 +161,6 @@ public class AccountController {
         return "File retrieved successfully";
     }
 
-//    private static String UPLOADED_FOLDER = "C:\\Users\\Admin\\Documents\\CV Backend\\src";
-//    @PostMapping(value = "/uploadcv/{id}")
-//    public String uploadCV(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes){
-//        if (file.isEmpty()) {
-//            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-//            return "redirect:uploadStatus";
-//        }
-//
-//        try {
-//
-//            // Get the file and save it somewhere
-//            byte[] bytes = file.getBytes();
-//            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
-//            Files.write(path, bytes);
-//
-//            redirectAttributes.addFlashAttribute("message",
-//                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return "redirect:/uploadStatus";
-//    }
-
-
     @GetMapping(value = "/{id}")
     public Account getAccountById(@PathVariable("id") ObjectId id){
         return repository.findBy_id(id);
@@ -209,8 +180,8 @@ public class AccountController {
     }
 
     @PutMapping(value = "/{id}")
-    public String modifyAccountById(HttpServletRequest response, @PathVariable("id")ObjectId id, @Valid @RequestBody Account account){
-        if(validOperation(response, id)) {
+    public String modifyAccountById(Principal principal, @PathVariable("id")ObjectId id, @Valid @RequestBody Account account){
+        if(validOperation(principal, id)) {
             Account updatable = repository.findBy_id(id);
             account.set_id(id);
             updatable.updateFields(account);
@@ -221,22 +192,23 @@ public class AccountController {
     }
     
     @PutMapping(value = "/password/{id}")
-    public String modifyPasswordById(HttpServletRequest response, @PathVariable("id")ObjectId id, @Valid @RequestBody Account account){
-        if(validOperation(response, id)) {
-            Account updatable = repository.findBy_id(id);
-            account.set_id(id);
-            updatable.setPassword(bCode.encode(account.getPassword()));
+    public String modifyPasswordById(Principal principal, @PathVariable("id")ObjectId id, @RequestBody PasswordObject passwords, HttpServletResponse response){
+        Account updatable = repository.findBy_id(id);
+        if(validOperation(principal, id) && bCode.matches(passwords.getOldPassword(), updatable.getPassword())) {
+            updatable.setPassword(bCode.encode(passwords.getNewPassword()));
             repository.save(updatable);
             return "Account Updated";
+        }
+        else{
+            response.setStatus(404);
         }
         return "Not Authorised";
     }
 
 
     @DeleteMapping(value = "/{id}")
-    public String deleteAccount(HttpServletRequest response, @PathVariable ObjectId id){
-        System.out.println(response.getHeader("Authorization"));
-        if (validOperation(response, id)) {
+    public String deleteAccount(Principal principal, @PathVariable ObjectId id){
+        if (validOperation(principal, id)) {
             repository.delete(repository.findBy_id(id));
             return "Account Deleted";
         }
@@ -244,17 +216,16 @@ public class AccountController {
     }
 
     @DeleteMapping(value = "/deletecv/{id}")
-    public String deleteCV(HttpServletRequest response, @PathVariable ObjectId id){
-        if(validOperation(response, id)){
+    public String deleteCV(Principal principal, @PathVariable ObjectId id){
+        if(validOperation(principal, id)){
             mongoTemplate.upsert(Query.query(where("_id").is(id)), Update.update("file",null), Account.class);
             return "CV was deleted";
         }
         return "CV could not be deleted";
     }
-    private boolean validOperation(HttpServletRequest response, ObjectId id){
-        String emailOfCall = new String(Base64.getDecoder().decode(response.getHeader("Authorization").substring("basic".length()).trim()), StandardCharsets.UTF_8);
-        emailOfCall = emailOfCall.substring(0, emailOfCall.indexOf(":"));
-        Account accountOfCall = repository.findByEmail(emailOfCall);
+
+    private boolean validOperation(Principal principal, ObjectId id){
+        Account accountOfCall = repository.findByEmail(principal.getName());
         return (accountOfCall.getUserRole().equalsIgnoreCase("admin") || accountOfCall.get_id().equals(id.toHexString())) ? true : false;
     }
 

@@ -86,7 +86,7 @@ export default class MainPage extends Component {
                     <NavbarBrand style={{marginLeft: '10px'}} class="logo" href="#">CV Management</NavbarBrand>
                     <Nav className="ml-auto" navbar>
                         <NavItem>
-                            <NavLink href="#">Profile</NavLink>
+                            <NavLink href="/privileges">Edit/Set Permissions</NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink href="/logout">Logout</NavLink>

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Navbar, NavbarBrand, NavItem, NavLink, Nav,Container, Input, Table, Button, ButtonGroup} from 'reactstrap';
+import {Button} from 'reactstrap';
 
 export default class Download extends Component {
     constructor(props){
@@ -28,7 +28,7 @@ handleDownload(event){
   render() {
     return (
       <div>
-        <Button color="primary" onClick = {this.handleDownload}>Download </Button>
+        <Button color="primary" style={{marginRight: '10px', float: 'left'}} onClick = {this.handleDownload}>Download</Button>
       </div>
     );
   }

@@ -29,7 +29,8 @@ public class Account {
 
 
 
-    public Account(){this.userRole="user";};
+
+    public Account(){this.userRole="user";}
 
     public Account(String firstName, String lastName) {
         this.firstName = firstName;
@@ -86,22 +87,19 @@ public class Account {
     }
     
     public void updateFields(Account inAccount) {
-    	if (inAccount.email != null) {
+    	if (inAccount.getEmail() != null || !inAccount.getEmail().equalsIgnoreCase("")) {
     		this.email = inAccount.getEmail();
     	}
-    	if (inAccount.firstName != null) {
+    	if (inAccount.getFirstName() != null || !inAccount.getFirstName().equalsIgnoreCase("")) {
     		this.firstName = inAccount.getFirstName();
     	}
-    	if (inAccount.lastName != null) {
+    	if (inAccount.getLastName() != null || !inAccount.getLastName().equalsIgnoreCase("")) {
     		this.lastName = inAccount.getLastName();
     	}
-        if (inAccount.userRole != null) {
-            this.userRole = inAccount.getUserRole();
-        }
     }
 
     public String getUserRole() {
-        return userRole;
+        return this.userRole;
     }
 
     public void setUserRole(String userRole) {

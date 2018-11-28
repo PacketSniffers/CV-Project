@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
-import { Media, Container, Col, Row, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import { Link, withRouter } from 'react-router-dom';
+import { Container, Button, FormGroup, Input } from 'reactstrap';
+import {withRouter } from 'react-router-dom';
 import Linkify from 'react-linkify';
-import axios from 'axios';
-import createHistory from 'history/createBrowserHistory';
 
 class CreateUser extends Component {
 
@@ -57,7 +55,7 @@ class CreateUser extends Component {
        <Container>
         <center>
           <form onSubmit={this.onFormSubmit} class = 'createForm'> 
-            <img width="100px" src={'https://scontent-lhr3-1.xx.fbcdn.net/v/t1.0-9/18622409_1370665929648398_390425705979425933_n.jpg?_nc_cat=101&_nc_ht=scontent-lhr3-1.xx&oh=f7b4cd27a0a17805194a7eaa54556aa9&oe=5C7C3796'} style={{marginBottom: '30px', borderRadius: '200px'}} className="img-responsive"/>
+            <img width="100px" src={'http://www.fastrackerzkennel.com/wp-content/uploads/2014/03/male-placeholder-image.jpeg'} style={{marginBottom: '30px', borderRadius: '200px'}} className="img-responsive"/>
 
             <FormGroup>
               <h1 class="display-5">Create User</h1>
@@ -75,13 +73,17 @@ class CreateUser extends Component {
               <Input type="email" name="email" id="exampleEmail"  value = {this.state.email} placeholder="Email" onChange ={this.handleEmailChange} required/>
             </FormGroup>
 
-            <FormGroup>
+            <FormGroup style={{marginBottom: '-8px'}}>
               <Input type="password" name="password" id="examplePassword"  value = {this.state.password} placeholder="Password" 
               onChange ={this.handlePasswordChange} required pattern = "(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{3,}" title = "Password must contain one uppercase, one lowercase and one number character"/>​
             </FormGroup>
 
             <FormGroup>
               <Button type="submit" value="Create User" color="primary" size="me" block > Create User </Button>
+            </FormGroup>
+
+            <FormGroup>
+              <Linkify><a style={{float: 'left'}} href='/login'>Log in</a></Linkify>
             </FormGroup>
           </form>
         </center>

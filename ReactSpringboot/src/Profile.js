@@ -6,6 +6,7 @@ import GoogleMapReact from 'google-map-react'
 import PDFComponent from './PDFComponent'
 import queryString from 'query-string';
 import ErrorBoundary from './ErrorBoundary.js';
+import Download from './Download.js';
 
 const AnyReactComponent = ({ text }) => (
   <div style={{
@@ -41,7 +42,8 @@ export default class Profile extends Component {
             nameWithoutSpace:'',
             name:'',
             email:'',
-            file:''
+            file:'',
+            hasFile:false
         };
     }
 
@@ -71,7 +73,7 @@ export default class Profile extends Component {
         // },
         body:data
         });
-
+        window.location.reload();
     }
 
     onFileDelete(event){
@@ -84,7 +86,7 @@ export default class Profile extends Component {
             stats = response.ok;
         
         }).then(response => {
-            if(stats == true){
+            if(stats === true){
                 window.alert("CV deleted");
                 window.location.reload();
 
@@ -116,9 +118,12 @@ export default class Profile extends Component {
             },  
         })
         .then(response => {stats = response.ok; return response.json()}).then(response => {
-        
+            var temp = false;
+            if (response.file !== null){
+                temp = true;
+            }
             if(stats === true){
-                this.setState({name:response.firstName + ' ' + response.lastName, email:response.email,nameWithoutSpace:response.firstName + response.lastName,}) 
+                this.setState({name:response.firstName + ' ' + response.lastName, email:response.email,nameWithoutSpace:response.firstName + response.lastName, hasFile: temp}) 
             }else{
                 alert("Incorrect login")
                 this.props.history.push('/logout')
@@ -161,7 +166,7 @@ export default class Profile extends Component {
                         <Col xs="6">
                             <Row>
                                 <Col xs="3" xs="6">
-                                    <img width="250px" src={'https://bit.ly/2Fvw9xi'} style={{paddingTop: '50px', paddingLeft: '50px'}} className="img-responsive"/>
+                                    <img width="250px" src={'http://www.fastrackerzkennel.com/wp-content/uploads/2014/03/male-placeholder-image.jpeg'} style={{paddingTop: '50px', paddingLeft: '50px'}} className="img-responsive"/>
                                 </Col>
                                 <Col xs="3" xs="6">
                                     <h6 style={{paddingTop: '50px', color: '#888a8c'}}>Name</h6>
@@ -188,7 +193,8 @@ export default class Profile extends Component {
                                 </div>
                             </center>
                             <br/>
-                            <Linkify><a style={{paddingLeft: '50px'}} href='#'>Edit Account</a></Linkify>
+                            <Linkify><a style={{paddingLeft: '50px'}} href={'/editaccount/'+this.state._id}>Edit Account</a>
+                            <a style={{paddingLeft: '50px'}} href={'/editpassword/'+this.state._id}>Edit Password</a></Linkify>
                         </Col>
                         <Col xs="6">
                             <Nav tabs style={{marginTop: '10px'}}>
@@ -219,10 +225,14 @@ export default class Profile extends Component {
                                             <Input type="file" name="file" id="exampleFile" onChange={this.handleFileInsert}/>
                                             <br/>
                                             {this.state.file !== ''?
-                                            <Button onClick={this.onFileUpload} style={{marginRight: '10px'}} color="primary">Upload</Button>:
-                                            <Button onClick={this.onFileUpload} style={{marginRight: '10px'}} color="primary" disabled>Upload</Button>}
-                                            
-                                            <Button color="danger" onClick = {(e) => {if(window.confirm("Are you sure want to delete this CV?"))this.onFileDelete(e)}}>Delete</Button>
+                                            <Button onClick={this.onFileUpload} style={{marginRight: '10px', float: 'left'}} color="info">Upload</Button>:
+                                            <Button onClick={this.onFileUpload} style={{marginRight: '10px', float: 'left'}} color="info" disabled>Upload</Button>}
+                                            {this.state.hasFile ? <div>
+                                            <Download class="downloadBtn" id={this.state._id}/>
+                                            <Button color="danger" style={{marginRight: '10px', float: 'left'}} onClick = {(e) => {if(window.confirm("Are you sure want to delete this CV?"))this.onFileDelete(e)}}>Delete</Button> </div>:
+                                            null 
+                                            }
+                                            {/* <Button color="danger" onClick = {(e) => {if(window.confirm("Are you sure want to delete this CV?"))this.onFileDelete(e)}}>Delete</Button> */}
                                             {/* <Button onClick={this.onFileUpload} color="primary">Upload</Button> */}
                                             
                                         </FormGroup>

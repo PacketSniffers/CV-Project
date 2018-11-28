@@ -20,7 +20,12 @@ code {
   width: 350px;
 } 
 
+ .loginFormNav {
+  padding-top: 210px;
+  width: 350px;
+} 
+
 .createForm {
   padding-top: 250px;
   width: 350px;
-} 
+}
