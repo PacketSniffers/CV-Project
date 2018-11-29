@@ -171,10 +171,10 @@ export default class Profile extends Component {
                                 <Col xs="3" xs="6">
                                     <h6 style={{paddingTop: '50px', color: '#888a8c'}}>Name</h6>
                                     <div style={{width: '200px', height: '1px', backgroundColor: 'grey'}}></div>
-                                    <h5 style={{paddingTop: '10px', color: '#636466'}}>{this.state.name}</h5>
+                                    <h5 style={{paddingTop: '10px', color: '#636466', wordWrap: 'break-word'}}>{this.state.name}</h5>
                                     <h6 style={{paddingTop: '10px', color: '#888a8c'}}>Email</h6>
                                     <div style={{width: '200px', height: '1px', backgroundColor: 'grey'}}></div>
-                                    <h5 style={{paddingTop: '10px', color: '#636466'}}><a href="mailto:testmail@gmail.com">{this.state.email}</a></h5>
+                                    <h5 style={{paddingTop: '10px', color: '#636466', wordWrap: 'break-word'}}><a href="mailto:testmail@gmail.com">{this.state.email}</a></h5>
                                 </Col>
                             </Row>
                             <center>

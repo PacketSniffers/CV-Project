@@ -41,10 +41,10 @@ class LoginAlt extends Component {
         'Content-Type': 'application/json',
       },
       
-    }).then(response => {stats = response.ok; return response.json()}).then(response => {
+    }).then(response => {stats = response.ok; return response}).then(response => {
       
       if(stats === true){
-        
+        response.json().then(response => {
         if(response.userRole === 'admin'){
           this.props.history.push('/adminpage')
         }
@@ -54,7 +54,7 @@ class LoginAlt extends Component {
             pathname:'/userprofile',
             search: '?id='+this.state._id
           })
-        }   
+        }})   
       }
         else{
           alert("Incorrect login")
