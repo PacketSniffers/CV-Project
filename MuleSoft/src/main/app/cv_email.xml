@@ -233,4 +233,14 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
         <!--<set-property propertyName="content-disposition" value = "attachment; filename=file.pdf" doc:name="Property"/>-->
         <copy-properties propertyName="*" doc:name="Copy All HTTP Headers"/>
     </flow>
+    <flow name="DeleteFileFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/deletecv/{id}" allowedMethods="DELETE" doc:name="Copy_of_HTTP"/>
+        <set-variable variableName="URLParamID" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Copy_of_Parameter ID"/>
+        <set-variable variableName="Authorization" value="#[message.inboundProperties.Authorization]" doc:name="Copy_of_Authorization"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/deletecv/{id}" method="DELETE" doc:name="Copy_of_Download Request">
+            <http:request-builder>
+                <http:builder ref="Request_Builder"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
 </mule>
