@@ -242,13 +242,7 @@ export default class Profile extends Component {
                                 <TabPane tabId="2">
                                     <Row>
                                     <Col sm="12">
-                                         <FormGroup>
-                                                <br/>
-                                                <h6 for="exampleFile">Upload CV</h6>
-                                                <Input type="file" name="file" id="exampleFile" />
-                                                <br/>
-                                                <Button color="primary">Upload</Button>
-                                            </FormGroup>
+                                          <PDFComponent/> 
                                     </Col>
                                     </Row>
                                 </TabPane>

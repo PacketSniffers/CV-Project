@@ -29,3 +29,8 @@ code {
   padding-top: 250px;
   width: 350px;
 }
+
+canvas {
+  width: 90%;
+  height: 620px;
+}

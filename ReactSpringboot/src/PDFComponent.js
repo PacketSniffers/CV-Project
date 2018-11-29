@@ -51,21 +51,20 @@ class PDFComponent extends React.Component {
     return (
       <div>
         {pagination}
-        {this.state.filename}
-        {(this.state.filename) ?
+        {/* {this.state.filename}
+        {(this.state.filename) ? */}
         <PDF
-            file={this.state.filename} 
+            file="DanHiggins.pdf" 
             onDocumentComplete={this.onDocumentComplete}
             page={this.state.page}
             />
-            : <FormGroup>
+            {/* : <FormGroup>
         <br/>
         <h6 for="exampleFile">Upload CV</h6>
         <Input type="file" name="file" id="exampleFile" />
         <br/>
         <Button color="primary">Upload</Button>
-      </FormGroup>
-        }
+      </FormGroup> */}
       </div>
     )
   }

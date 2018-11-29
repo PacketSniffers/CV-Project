@@ -68,7 +68,7 @@ export default class MainPage extends Component {
                         
                         </td>
                     <td><Button color="info" size="sm" disabled>Flag</Button></td>
-                    <td><Button color="warning" size="sm">Favourite</Button></td>
+                    <td><Button color="warning" size="sm" disabled>Favourite</Button></td>
                     {/* <td><Button color="danger" size="sm">Delete</Button></td> */}
                     <td><Delete id={array[arrayIndex]._id}/></td>
                 </tr>
