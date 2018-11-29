@@ -83,7 +83,7 @@ class CreateUser extends Component {
             </FormGroup>
 
             <FormGroup>
-              <Linkify><a style={{float: 'left'}} href='/login'>Log in</a></Linkify>
+              <Linkify><a style={{float: 'left'}} href='/'>Log in</a></Linkify>
             </FormGroup>
           </form>
         </center>
