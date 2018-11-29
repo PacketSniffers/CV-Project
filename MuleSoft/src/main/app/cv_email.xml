@@ -157,8 +157,8 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
                 <http:builder ref="Request_Builder"/>
             </http:request-builder>
         </http:request>
-        <set-variable variableName="userID" value="#[payload.email]" doc:name="User ID"/>
         <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-variable variableName="userID" value="#[payload.email]" doc:name="User ID"/>
         <set-variable variableName="email" value="#[payload.email]" doc:name="Email"/>
         <set-variable variableName="firstName" value="#[payload.firstName]" doc:name="First Name"/>
         <set-variable variableName="lastName" value="#[payload.lastName]" doc:name="Last Name"/>
