@@ -12,24 +12,8 @@ import org.junit.Test;
 
 import com.qa.demo.domain.Account;
 
-public class AccountTest {
+public class AccountTest extends BackendBaseTest{
     Account accountObj = new Account();
-    static int count = 1;
-
-    @BeforeClass
-    public static void before() {
-        System.out.println("\nWelcome to the Tests");
-    }
-
-    @Before
-    public void setup() {
-        System.out.println("Test: " + count);
-    }
-
-    @After
-    public void teardown() {
-       count++;
-    }
     
     @Test
     public void emailTest() {

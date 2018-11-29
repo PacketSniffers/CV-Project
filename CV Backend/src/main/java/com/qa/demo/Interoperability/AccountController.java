@@ -237,8 +237,8 @@ public class AccountController {
     private boolean validOperation(Principal principal, ObjectId id){
         Account accountOfCall = repository.findByEmail(principal.getName());
         return (accountOfCall.getUserRole() == Roles.admin || accountOfCall.get_id().equals(id.toHexString()));
-    }
-    private boolean moreAdmins(ObjectId id){
+    } 
+    private boolean moreAdmins(ObjectId id) {
         Account isAdmin = repository.findBy_id(id);
         List<Account> admins = repository.findByUserRole(Roles.admin);
         return !(isAdmin.getUserRole()==Roles.admin && admins.size() <2);

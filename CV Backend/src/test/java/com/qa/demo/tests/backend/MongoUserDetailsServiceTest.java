@@ -32,8 +32,7 @@ public class MongoUserDetailsServiceTest extends BackendBaseTest {
 
 	@Test
 	public void loadUserByUsernameTest() {
-		test = report.startTest("Get all accounts");
-		test.log(LogStatus.INFO, "Connecting to host");
+		test = report.startTest("Load user by username test");
 		List<Account> mockUserList = new ArrayList<Account>();
 		Account accountObj = new Account("John", "Doe");
 
@@ -45,6 +44,10 @@ public class MongoUserDetailsServiceTest extends BackendBaseTest {
 		mockUserList.add(accountObj);
 		List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_user"));
 
+		if(new User(accountObj.getEmail(), accountObj.getPassword(), authorities) == mongoUserDetailsService.loadUserByUsername(accountObj.getEmail()))
+		{
+			test.log(LogStatus.PASS, "User successfully retrieved");
+		}
 		assertEquals(new User(accountObj.getEmail(), accountObj.getPassword(), authorities),
 				mongoUserDetailsService.loadUserByUsername(accountObj.getEmail()));
 	}
@@ -60,14 +63,14 @@ public class MongoUserDetailsServiceTest extends BackendBaseTest {
 
 		accountObj.setEmail("brad@mail.com");
 		accountObj.setPassword("Password123");
-		accountObj.setUserRole(Roles.user);
+		accountObj.setUserRole(Roles.admin);
 		mockUserList.add(accountObj);
 		List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_admin"));
 		;
 
 		assertEquals(new User(accountObj.getEmail(), accountObj.getPassword(), authorities),
-				mongoUserDetailsService.loadUserByUsername(accountObj.getEmail()));
-	}
+		mongoUserDetailsService.loadUserByUsername(accountObj.getEmail()));
+	} 
 
 	@Test(expected = UsernameNotFoundException.class)
 	public void loadUserByUsernameNullTest() {
